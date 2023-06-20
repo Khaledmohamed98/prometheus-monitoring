@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: alerts-slack
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack 
+    release: monitoring
+spec:
+  route:
+    receiver: 'slack'
+    repeatInterval: 30m
+    routes:
+    - matchers:
+      - name: alertname
+        value: HostHighCpuLoad
+    - matchers:
+      - name: alertname
+        value: KubernetesPodCrashLooping
+      repeatInterval: 10m
+  receivers:
+  - name: 'slack'
+    slackConfigs:
+        - channel: "#prometheus-alerts"
+          apiURL:
+            name: slack-secret
+            key: slack-webhook-url
+          username: AlertManager
+          
